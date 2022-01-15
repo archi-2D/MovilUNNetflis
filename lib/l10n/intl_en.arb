@@ -1,0 +1,14 @@
+{
+    "continue_label": "Continue",
+    "hello": "hello",
+    "invalid_password": "Invalid password",
+    "login_button_create_account": "Create account",
+    "login_button_login": "Login",
+    "login_button_login_google": "Login with google",
+    "login_email_field_label": "Email",
+    "login_password_field_label": "Password",
+    "login_phone_field_label": "Phone number",
+    "login_title": "Log into your account",
+    "name": "Name",
+    "register_title": "Sign up free!"
+}
