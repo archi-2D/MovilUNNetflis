@@ -31,7 +31,7 @@ class _HomePageState extends State<HomePage> {
       children: [
         Container(
           color: Colors.blue,
-        )
+        ),
       ],
     );
   }
