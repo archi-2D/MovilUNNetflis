@@ -4,7 +4,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:mobile_component/generated/l10n.dart';
-import 'package:mobile_component/src/View/routes/routes.dart';
+import 'package:mobile_component/src/view/routes/routes.dart';
 import 'package:mobile_component/src/logic/provider/graphql_provider.dart';
 import 'package:mobile_component/src/logic/provider/provider_blocs.dart';
 import 'package:provider/provider.dart';
