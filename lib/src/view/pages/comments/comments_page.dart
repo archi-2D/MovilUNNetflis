@@ -43,9 +43,11 @@ class _CommentsPageState extends State<CommentsPage> {
       },
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: Colors.white54,
+          title: Text('UNetflix - Opinions'),
+          backgroundColor: Colors.red,
           elevation: 2,
         ),
+        backgroundColor: Colors.redAccent,
         body: body(context),
         bottomNavigationBar: const BottonBar(),
       ),
@@ -64,7 +66,7 @@ class _CommentsPageState extends State<CommentsPage> {
                 children: [
                   const Text(
                     "Movies",
-                    style: TextStyle(fontSize: 25),
+                    style: TextStyle(fontSize: 35, color: Colors.white),
                   ),
                   _card("Encanto"),
                   _card("Mr Nobody")
@@ -76,10 +78,10 @@ class _CommentsPageState extends State<CommentsPage> {
                 children: [
                   const Text(
                     "Series",
-                    style: TextStyle(fontSize: 25),
+                    style: TextStyle(fontSize: 35, color: Colors.white),
                   ),
                   _card("The Witcher"),
-                  _card("Mr Robot"),
+                  _card("Mr Robot")
                 ],
               ),
             ),
@@ -97,7 +99,7 @@ class _CommentsPageState extends State<CommentsPage> {
           children: [
             Text(
               name,
-              style: TextStyle(fontSize: 15),
+              style: const TextStyle(fontSize: 23, color: Colors.white),
             ),
             _imageLogo(name),
             _buttons(name)
@@ -120,13 +122,13 @@ class _CommentsPageState extends State<CommentsPage> {
         child: TextButton(
           style: TextButton.styleFrom(
             primary: Colors.white,
-            backgroundColor: Colors.red,
+            backgroundColor: Colors.black54,
           ),
           onPressed: () {
             commentsBloc.changeMovieSerieSelected(name);
             Navigator.pushReplacementNamed(context, 'comments/rate');
           },
-          child: Text('Rate'),
+          child: const Text('Rate', style: TextStyle(fontSize: 15)),
         ));
   }
 
@@ -136,7 +138,7 @@ class _CommentsPageState extends State<CommentsPage> {
         child: TextButton(
           style: TextButton.styleFrom(
             primary: Colors.white,
-            backgroundColor: Colors.red,
+            backgroundColor: Colors.black54,
           ),
           onPressed: () {
             user.mediaName = name;
@@ -144,7 +146,7 @@ class _CommentsPageState extends State<CommentsPage> {
             commentsBloc.changeMovieSerieSelected(name);
             Navigator.pushReplacementNamed(context, 'comments/viewRate');
           },
-          child: Text('view rate'),
+          child: const Text('view rate', style: TextStyle(fontSize: 15)),
         ));
   }
 

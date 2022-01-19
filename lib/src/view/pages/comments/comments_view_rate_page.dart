@@ -42,7 +42,8 @@ class _CommentsViewRatePageState extends State<CommentsViewRatePage> {
               Icons.arrow_back_ios_new, // add custom icons also
             ),
           ),
-          backgroundColor: Colors.white54,
+          title: Text('UNetflix'),
+          backgroundColor: Colors.red,
           elevation: 2,
         ),
         body: body(context, commentsBloc),
@@ -87,8 +88,10 @@ class _CommentsViewRatePageState extends State<CommentsViewRatePage> {
                       style: TextStyle(fontSize: 20))),
               const Padding(
                   padding: EdgeInsets.only(top: 10, right: 20, left: 10),
-                  child: Text('Comment: (Acá iria lo de la busqueda)',
-                      style: TextStyle(fontSize: 20)))
+                  child: Text('Comments: ', style: TextStyle(fontSize: 20))),
+              _comment("Primero comentario"),
+              _comment("Segundo comentario"),
+              _comment("Tercer comentario"),
             ],
           ),
         )
@@ -163,6 +166,12 @@ class _CommentsViewRatePageState extends State<CommentsViewRatePage> {
         ),
       ],
     );
+  }
+
+  Widget _comment(String text) {
+    return Padding(
+        padding: EdgeInsets.only(top: 10, right: 10, left: 10),
+        child: Text(text, style: TextStyle(fontSize: 20)));
   }
 
   a() async {

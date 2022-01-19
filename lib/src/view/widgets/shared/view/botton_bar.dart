@@ -18,10 +18,11 @@ class _BottonBarState extends State<BottonBar> {
     appBloc = context.read<ProviderBlocs>().appBloc;
     return BottomNavigationBar(
       items: const <BottomNavigationBarItem>[
-        BottomNavigationBarItem(icon: Icon(Icons.home), label: 'inicio'),
-        BottomNavigationBarItem(icon: Icon(Icons.comment), label: 'comentarios')
+        BottomNavigationBarItem(icon: Icon(Icons.home, color: Colors.red), label: ''),
+        BottomNavigationBarItem(icon: Icon(Icons.comment, color: Colors.red,), label: '')
       ],
       currentIndex: appBloc.page!,
+      backgroundColor: Colors.black38,
       onTap: onTapped,
     );
   }

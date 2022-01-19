@@ -47,7 +47,8 @@ class _CommentsRatePageState extends State<CommentsRatePage> {
               Icons.arrow_back_ios_new, // add custom icons also
             ),
           ),
-          backgroundColor: Colors.white54,
+          title: Text('UNetflix'),
+          backgroundColor: Colors.red,
           elevation: 2,
         ),
         body: body(context, commentsBloc),
