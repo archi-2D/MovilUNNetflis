@@ -40,9 +40,6 @@ class MessageLookup extends MessageLookupByLibrary {
         "login_title":
             MessageLookupByLibrary.simpleMessage("Log into your account"),
         "name": MessageLookupByLibrary.simpleMessage("Name"),
-        "register_title": MessageLookupByLibrary.simpleMessage("Sign up free!"),
-        "rate_label": MessageLookupByLibrary.simpleMessage("Rate")
-
-        
+        "register_title": MessageLookupByLibrary.simpleMessage("Sign up free!")
       };
 }

@@ -4,15 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/cupertino.dart';
 
-import 'package:mobile_component/generated/l10n.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:mobile_component/src/logic/provider/graphql_provider.dart';
 import 'package:mobile_component/src/logic/bloc/comments_bloc.dart';
 import 'package:mobile_component/src/logic/provider/provider_blocs.dart';
+import 'package:mobile_component/src/view/pages/comments/comments_logic.dart';
 import 'package:mobile_component/src/view/pages/comments/comments_rate_page.dart';
 import 'package:mobile_component/src/view/pages/comments/comments_view_rate_page.dart';
 
-import 'package:mobile_component/src/view/widgets/shared/utils/button_widget.dart';
 import 'package:mobile_component/src/view/widgets/shared/view/botton_bar.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/src/provider.dart';
@@ -32,10 +31,12 @@ class User {
 
 class _CommentsPageState extends State<CommentsPage> {
   GraphqlClass graphqlClass = GraphqlClass();
+  CommentsLogic commentsLogic = CommentsLogic();
+  late CommentsBloc commentsBloc;
   final user = User(mediaName: 'unknown', username: 'unknown');
   @override
   Widget build(BuildContext context) {
-    
+    commentsBloc = context.read<ProviderBlocs>().comments;
     return WillPopScope(
       onWillPop: () {
         return Navigator.maybePop(context);
@@ -59,14 +60,14 @@ class _CommentsPageState extends State<CommentsPage> {
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             Expanded(
-              child: Column(                
+              child: Column(
                 children: [
                   const Text(
                     "Movies",
-                    style: TextStyle(fontSize: 25),                      
+                    style: TextStyle(fontSize: 25),
                   ),
                   _card("Encanto"),
-                  _card("Mr robot"),
+                  _card("Mr Nobody")
                 ],
               ),
             ),
@@ -75,10 +76,10 @@ class _CommentsPageState extends State<CommentsPage> {
                 children: [
                   const Text(
                     "Series",
-                    style: TextStyle(fontSize: 25), 
-                    ),
-                  _card("The witcher"),
-                  _card("Mr nobody")
+                    style: TextStyle(fontSize: 25),
+                  ),
+                  _card("The Witcher"),
+                  _card("Mr Robot"),
                 ],
               ),
             ),
@@ -88,89 +89,67 @@ class _CommentsPageState extends State<CommentsPage> {
     );
   }
 
-  Widget _card(String name){
+  Widget _card(String name) {
     return Padding(
         padding: const EdgeInsets.only(top: 10, left: 10, right: 10),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-              Text(
-                name,
-                style: TextStyle(fontSize: 15), 
-              ),
-              _imageLogo(name),
-              _buttons(name)
-            ],
-        )
-          
-    );
+            Text(
+              name,
+              style: TextStyle(fontSize: 15),
+            ),
+            _imageLogo(name),
+            _buttons(name)
+          ],
+        ));
   }
 
-  Widget _buttons(String name){
+  Widget _buttons(String name) {
     return Container(
-      padding: const EdgeInsets.only(bottom: 10),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-            _rateButton(name),
-            _viewRateButton(name)
-          ],
-      )     
-    );
+        padding: const EdgeInsets.only(bottom: 10),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [_rateButton(name), _viewRateButton(name)],
+        ));
   }
 
   Widget _rateButton(String name) {
     return Padding(
         padding: const EdgeInsets.only(left: 5, right: 5),
-        child: 
-          TextButton(
-            style: TextButton.styleFrom(
-              primary: Colors.white,
-              backgroundColor: Colors.red,
-            ),
-            onPressed: () { 
-              //Navigator.pushReplacementNamed(context, 'comments/rate');
-              user.mediaName = name;
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => CommentsRatePage(
-                    user: user,
-                  )),
-              );
-            },
-            child: Text('Rate'),
-          )
-    );
+        child: TextButton(
+          style: TextButton.styleFrom(
+            primary: Colors.white,
+            backgroundColor: Colors.red,
+          ),
+          onPressed: () {
+            commentsBloc.changeMovieSerieSelected(name);
+            Navigator.pushReplacementNamed(context, 'comments/rate');
+          },
+          child: Text('Rate'),
+        ));
   }
 
   Widget _viewRateButton(String name) {
     return Padding(
         padding: const EdgeInsets.only(left: 5, right: 5),
-        child: 
-          TextButton(
-            style: TextButton.styleFrom(
-              primary: Colors.white,
-              backgroundColor: Colors.red,
-            ),
-            onPressed: () { 
-              //Navigator.pushReplacementNamed(context, 'comments/viewRate');
-              user.mediaName = name;
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => CommentsViewRatePage(
-                    user: user,
-                  )),
-              );
-            },
-            child: Text('view rate'),
-          )
-    );
+        child: TextButton(
+          style: TextButton.styleFrom(
+            primary: Colors.white,
+            backgroundColor: Colors.red,
+          ),
+          onPressed: () {
+            user.mediaName = name;
+            commentsLogic.getMoviesScore(graphqlClass);
+            commentsBloc.changeMovieSerieSelected(name);
+            Navigator.pushReplacementNamed(context, 'comments/viewRate');
+          },
+          child: Text('view rate'),
+        ));
   }
 
   Container _imageLogo(String name) {
-    var location = 'assets/img/' + noWhiteSpaces(name) +'.jpg';
+    var location = 'assets/img/' + noWhiteSpaces(name) + '.jpg';
     return Container(
       padding: const EdgeInsets.only(top: 10),
       child: Center(
@@ -211,14 +190,13 @@ query {
     return encoder.convert(jsonObject);
   }
 
-  String noWhiteSpaces(String word){
+  String noWhiteSpaces(String word) {
     String newS = '';
-    for(int i=0;i<word.length;i++){
-      if(!word[i].contains(' ')){
+    for (int i = 0; i < word.length; i++) {
+      if (!word[i].contains(' ')) {
         newS = newS + word[i];
       }
     }
     return newS;
   }
 }
-

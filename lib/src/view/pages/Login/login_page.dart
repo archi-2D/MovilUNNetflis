@@ -182,7 +182,7 @@ class _LoginPageState extends State<LoginPage> {
   Widget _emailField(LoginBloc loginBloc) {
     return TextField(
       decoration: _decorationField(
-          S.of(context).login_email_field_label,
+          'username',
           const Icon(
             Icons.email,
             color: Colors.grey,

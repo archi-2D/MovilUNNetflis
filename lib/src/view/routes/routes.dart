@@ -14,8 +14,8 @@ Map<String, WidgetBuilder> getAppRoutes() {
     'register': (BuildContext context) => const RegisterPage(),
     'home': (BuildContext context) => const HomePage(), //Poner SplashScreen
     'comments': (BuildContext context) => const CommentsPage(),
-    //'comments/rate': (BuildContext context) => const CommentsRatePage(user: user),
-    //'comments/viewRate': (BuildContext context) => const CommentsViewRatePage(),
+    'comments/rate': (BuildContext context) => const CommentsRatePage(),
+    'comments/viewRate': (BuildContext context) => const CommentsViewRatePage(),
     //'/': (BuildContext context) => SplashScreen(),
   };
 }

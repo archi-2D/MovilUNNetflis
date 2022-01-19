@@ -16,24 +16,23 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/src/provider.dart';
 
 class CommentsRatePage extends StatefulWidget {
-  const CommentsRatePage({Key? key, required this.user}) : super(key: key);
-  final User user;
+  const CommentsRatePage({
+    Key? key,
+  }) : super(key: key);
 
   @override
-  _CommentsRatePageState createState() => _CommentsRatePageState(user);
+  _CommentsRatePageState createState() => _CommentsRatePageState();
 }
 
 class _CommentsRatePageState extends State<CommentsRatePage> {
   GraphqlClass graphqlClass = GraphqlClass();
-  late User user;
-  _CommentsRatePageState(this.user);
 
   @override
   Widget build(BuildContext context) {
     CommentsBloc commentsBloc = context.read<ProviderBlocs>().comments;
-    commentsBloc.changeUserName(user.username);
-    commentsBloc.changeName(user.mediaName);
-    
+    commentsBloc.changeUserName('32');
+    commentsBloc.changeName('33');
+
     return WillPopScope(
       onWillPop: () {
         return Navigator.maybePop(context);
@@ -66,26 +65,25 @@ class _CommentsRatePageState extends State<CommentsRatePage> {
         //stream: null,
         function: () => {
           showDialog(
-            barrierDismissible: false,
-            context: context,
-            builder: (context) {
-              return CupertinoAlertDialog(
-                title: const Text('Your rate was created'),
-                actions: <Widget>[
-                  TextButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      child: TextButton(
+              barrierDismissible: false,
+              context: context,
+              builder: (context) {
+                return CupertinoAlertDialog(
+                  title: const Text('Your rate was created'),
+                  actions: <Widget>[
+                    TextButton(
                         onPressed: () {
-                          Navigator.pushReplacementNamed(context, 'comments');
+                          Navigator.pop(context);
                         },
-                        child: const Text('Aceptar'),
-                      )),
-                ],
-              );
-            }
-          ),
+                        child: TextButton(
+                          onPressed: () {
+                            Navigator.pushReplacementNamed(context, 'comments');
+                          },
+                          child: const Text('Aceptar'),
+                        )),
+                  ],
+                );
+              }),
         },
         text: "Rate",
         enebleColor: const Color.fromRGBO(83, 232, 139, 1),
@@ -113,7 +111,7 @@ class _CommentsRatePageState extends State<CommentsRatePage> {
               ),*/
               // ignore: prefer_const_constructors
               Text(
-                "Your rate of ${user.mediaName}",
+                "Your rate of ${commentsBloc.movieSerieSelected}",
                 style: const TextStyle(
                   fontSize: 30,
                   fontFamily: 'OpenSans',
@@ -122,12 +120,10 @@ class _CommentsRatePageState extends State<CommentsRatePage> {
                 ),
               ),
               const Padding(
-                padding: EdgeInsets.only(top: 10, right: 20, left: 10),
-                child: Text(
-                  'Please let us know what you think about the tittle.',
-                  style: TextStyle(fontSize: 23)
-                )
-              ),
+                  padding: EdgeInsets.only(top: 10, right: 20, left: 10),
+                  child: Text(
+                      'Please let us know what you think about the tittle.',
+                      style: TextStyle(fontSize: 23))),
               StreamBuilder<Object>(
                   stream: null,
                   builder: (context, snapshot) {
@@ -142,7 +138,6 @@ class _CommentsRatePageState extends State<CommentsRatePage> {
 
   Column form(CommentsBloc commentBloc) {
     return Column(
-
       children: [
         Padding(
           padding: const EdgeInsets.only(top: 20, left: 20, right: 20),

@@ -15,23 +15,19 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/src/provider.dart';
 
 class CommentsViewRatePage extends StatefulWidget {
-  const CommentsViewRatePage({Key? key, required this.user}) : super(key: key);
-  final User user;
+  const CommentsViewRatePage({Key? key}) : super(key: key);
 
   @override
-  _CommentsViewRatePageState createState() => _CommentsViewRatePageState(user);
+  _CommentsViewRatePageState createState() => _CommentsViewRatePageState();
 }
 
 class _CommentsViewRatePageState extends State<CommentsViewRatePage> {
   GraphqlClass graphqlClass = GraphqlClass();
 
-  late User user;
-  _CommentsViewRatePageState(this.user);
-
   @override
   Widget build(BuildContext context) {
     CommentsBloc commentsBloc = context.read<ProviderBlocs>().comments;
-    
+
     return WillPopScope(
       onWillPop: () {
         return Navigator.maybePop(context);
@@ -73,7 +69,7 @@ class _CommentsViewRatePageState extends State<CommentsViewRatePage> {
               ),*/
               // ignore: prefer_const_constructors
               Text(
-                "Rate of ${user.mediaName}",
+                "Rate of ${commentsBloc.movieSerieSelected}",
                 style: const TextStyle(
                   fontSize: 30,
                   fontFamily: 'OpenSans',
@@ -82,26 +78,17 @@ class _CommentsViewRatePageState extends State<CommentsViewRatePage> {
                 ),
               ),
               const Padding(
-                padding: EdgeInsets.only(top: 10, right: 20, left: 10),
-                child: Text(
-                  'This is the rate of the tittle in the plataform',
-                  style: TextStyle(fontSize: 23)
-                )
-              ),
+                  padding: EdgeInsets.only(top: 10, right: 20, left: 10),
+                  child: Text('This is the rate of the tittle in the plataform',
+                      style: TextStyle(fontSize: 23))),
               const Padding(
-                padding: EdgeInsets.only(top: 10, right: 20, left: 10),
-                child: Text(
-                  'Score: (Acá iria lo de la busqueda)',
-                  style: TextStyle(fontSize: 20)
-                )
-              ),
+                  padding: EdgeInsets.only(top: 10, right: 20, left: 10),
+                  child: Text('Score: (Acá iria lo de la busqueda)',
+                      style: TextStyle(fontSize: 20))),
               const Padding(
-                padding: EdgeInsets.only(top: 10, right: 20, left: 10),
-                child: Text(
-                  'Comment: (Acá iria lo de la busqueda)',
-                  style: TextStyle(fontSize: 20)
-                )
-              )
+                  padding: EdgeInsets.only(top: 10, right: 20, left: 10),
+                  child: Text('Comment: (Acá iria lo de la busqueda)',
+                      style: TextStyle(fontSize: 20)))
             ],
           ),
         )

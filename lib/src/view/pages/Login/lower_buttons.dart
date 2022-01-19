@@ -21,10 +21,12 @@ class ButtonsWidget extends StatelessWidget {
           backgroundColor: snapshot.hasData
               ? const Color.fromRGBO(83, 232, 139, 1)
               : Colors.grey[400],
-          onPressed: () => {
-            appBloc.changePage(0),
-            Navigator.pushReplacementNamed(context, 'home')
-          },
+          onPressed: snapshot.hasData
+              ? () => {
+                    appBloc.changePage(0),
+                    Navigator.pushReplacementNamed(context, 'home')
+                  }
+              : null,
           label: Text(
             S.of(context).login_button_login,
             style: const TextStyle(

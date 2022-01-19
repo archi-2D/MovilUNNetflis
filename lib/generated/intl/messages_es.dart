@@ -42,7 +42,6 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Ingresa a tu cuenta"),
         "name": MessageLookupByLibrary.simpleMessage("Nombre"),
         "register_title":
-            MessageLookupByLibrary.simpleMessage("Registrate gratis!"),
-        "rate_label": MessageLookupByLibrary.simpleMessage("Calificar"),
+            MessageLookupByLibrary.simpleMessage("Registrate gratis!")
       };
 }
