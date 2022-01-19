@@ -99,10 +99,13 @@ class _CommentsViewRatePageState extends State<CommentsViewRatePage> {
               const Padding(
                 padding: EdgeInsets.only(top: 10, right: 20, left: 10),
                 child: Text(
-                  'Comment: (Acá iria lo de la busqueda)',
+                  'Comments: ',
                   style: TextStyle(fontSize: 20)
                 )
-              )
+              ),
+              _comment("Primero comentario"),
+              _comment("Segundo comentario"),
+              _comment("Tercer comentario"),
             ],
           ),
         )
@@ -176,6 +179,16 @@ class _CommentsViewRatePageState extends State<CommentsViewRatePage> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _comment(String text){
+    return Padding(
+        padding: EdgeInsets.only(top: 10, right: 10, left: 10),
+        child: Text(
+          text,
+          style: TextStyle(fontSize: 20)
+        )          
     );
   }
 
