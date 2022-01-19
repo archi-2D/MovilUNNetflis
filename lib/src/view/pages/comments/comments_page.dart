@@ -42,9 +42,11 @@ class _CommentsPageState extends State<CommentsPage> {
       },
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: Colors.white54,
+          title: Text('UNetflix - Opinions'),
+          backgroundColor: Colors.red,
           elevation: 2,
         ),
+        backgroundColor: Colors.redAccent,
         body: body(context),
         bottomNavigationBar: const BottonBar(),
       ),
@@ -63,7 +65,7 @@ class _CommentsPageState extends State<CommentsPage> {
                 children: [
                   const Text(
                     "Movies",
-                    style: TextStyle(fontSize: 25),                      
+                    style: TextStyle(fontSize: 35, color: Colors.white),                      
                   ),
                   _card("Encanto"),
                   _card("Mr robot"),
@@ -75,7 +77,7 @@ class _CommentsPageState extends State<CommentsPage> {
                 children: [
                   const Text(
                     "Series",
-                    style: TextStyle(fontSize: 25), 
+                    style: TextStyle(fontSize: 35, color: Colors.white), 
                     ),
                   _card("The witcher"),
                   _card("Mr nobody")
@@ -96,7 +98,7 @@ class _CommentsPageState extends State<CommentsPage> {
           children: [
               Text(
                 name,
-                style: TextStyle(fontSize: 15), 
+                style: TextStyle(fontSize: 23, color: Colors.white), 
               ),
               _imageLogo(name),
               _buttons(name)
@@ -126,7 +128,7 @@ class _CommentsPageState extends State<CommentsPage> {
           TextButton(
             style: TextButton.styleFrom(
               primary: Colors.white,
-              backgroundColor: Colors.red,
+              backgroundColor: Colors.black54,
             ),
             onPressed: () { 
               //Navigator.pushReplacementNamed(context, 'comments/rate');
@@ -139,7 +141,7 @@ class _CommentsPageState extends State<CommentsPage> {
                   )),
               );
             },
-            child: Text('Rate'),
+            child: Text('Rate', style: TextStyle(fontSize: 15)),
           )
     );
   }
@@ -151,7 +153,7 @@ class _CommentsPageState extends State<CommentsPage> {
           TextButton(
             style: TextButton.styleFrom(
               primary: Colors.white,
-              backgroundColor: Colors.red,
+              backgroundColor: Colors.black54,
             ),
             onPressed: () { 
               //Navigator.pushReplacementNamed(context, 'comments/viewRate');
@@ -164,7 +166,7 @@ class _CommentsPageState extends State<CommentsPage> {
                   )),
               );
             },
-            child: Text('view rate'),
+            child: Text('View rate', style: TextStyle(fontSize: 15)),
           )
     );
   }
