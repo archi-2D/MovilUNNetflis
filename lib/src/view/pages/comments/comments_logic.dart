@@ -34,7 +34,7 @@ query {
     return encoder.convert(jsonObject);
   }
 
-  getMoviesScore(graphqlClass) async {
+  Future<List<Score>> getMoviesScore(graphqlClass) async {
     GraphQLClient client = graphqlClass.clientToQuery();
     String document = """
 query {
@@ -54,11 +54,31 @@ query {
     for (var scroeApi in scores) {
       scoreList.add(Score.fromJson(scroeApi));
     }
-    for (var scroel in scoreList) {
-      print(scroel.username);
-      print(scroel.moiveSerieName);
+
+    return scoreList;
+  }
+
+  Future<List<Score>> getSeriesScore(graphqlClass) async {
+    GraphQLClient client = graphqlClass.clientToQuery();
+    String document = """
+query {
+  getSeriesScore{
+    user_name
+    moive_serie_name
+    score
+    description
+  }
+}
+""";
+    List<Score> scoreList = [];
+    QueryResult result =
+        await client.query(QueryOptions(document: gql(document)));
+
+    var scores = result.data!.values.elementAt(1);
+    for (var scroeApi in scores) {
+      scoreList.add(Score.fromJson(scroeApi));
     }
 
-    //print(response);
+    return scoreList;
   }
 }

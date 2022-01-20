@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mobile_component/generated/l10n.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:mobile_component/src/logic/models/score_model.dart';
 import 'package:mobile_component/src/logic/provider/graphql_provider.dart';
 import 'package:mobile_component/src/logic/bloc/comments_bloc.dart';
 import 'package:mobile_component/src/logic/provider/provider_blocs.dart';
@@ -27,6 +28,23 @@ class _CommentsViewRatePageState extends State<CommentsViewRatePage> {
   @override
   Widget build(BuildContext context) {
     CommentsBloc commentsBloc = context.read<ProviderBlocs>().comments;
+    List<Score> scores = [];
+    if (commentsBloc.isMovie!) {
+      for (var score in commentsBloc.moviesScore!) {
+        if (commentsBloc.movieSerieSelected == score.moiveSerieName) {
+          scores.add(score);
+        }
+      }
+    } else {
+      for (var score in commentsBloc.seriesScore!) {
+        if (commentsBloc.movieSerieSelected == score.moiveSerieName) {
+          scores.add(score);
+        }
+      }
+    }
+    for (var a in scores) {
+      print(a.score);
+    }
 
     return WillPopScope(
       onWillPop: () {
@@ -46,160 +64,56 @@ class _CommentsViewRatePageState extends State<CommentsViewRatePage> {
           backgroundColor: Colors.red,
           elevation: 2,
         ),
-        body: body(context, commentsBloc),
+        body: body(context, commentsBloc, scores),
       ),
     );
   }
 
-  Stack body(BuildContext context, CommentsBloc commentsBloc) {
-    return Stack(
-      children: [
-        SingleChildScrollView(
-          child: Column(
-            children: [
-              /*Text(
-                dotenv.env['GRAPHLURL'].toString(),
-              ),
-              ButtomWidget(
-                disableColor: Colors.grey,
-                enebleColor: Colors.blue,
-                function: () {
-                  a();
-                },
-                text: 'asd',
-              ),*/
-              // ignore: prefer_const_constructors
-              Text(
-                "Rate of ${commentsBloc.movieSerieSelected}",
-                style: const TextStyle(
-                  fontSize: 30,
-                  fontFamily: 'OpenSans',
-                  color: Color.fromRGBO(9, 5, 28, 1),
-                  fontWeight: FontWeight.w400,
-                ),
-              ),
-              const Padding(
-                  padding: EdgeInsets.only(top: 10, right: 20, left: 10),
-                  child: Text('This is the rate of the tittle in the plataform',
-                      style: TextStyle(fontSize: 23))),
-              const Padding(
-                  padding: EdgeInsets.only(top: 10, right: 20, left: 10),
-                  child: Text('Score: (Acá iria lo de la busqueda)',
-                      style: TextStyle(fontSize: 20))),
-              const Padding(
-                  padding: EdgeInsets.only(top: 10, right: 20, left: 10),
-                  child: Text('Comments: ', style: TextStyle(fontSize: 20))),
-              _comment("Primero comentario"),
-              _comment("Segundo comentario"),
-              _comment("Tercer comentario"),
-            ],
-          ),
-        )
-      ],
+  body(BuildContext context, CommentsBloc commentsBloc, scores) {
+    return ListView(
+      children: _crearItems(scores, commentsBloc),
     );
   }
 
-  Column form(CommentsBloc commentBloc) {
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
-          child: TextField(
-            decoration: InputDecoration(
-              //hintText: "Your Name",
-              labelText: 'Score the movie from 1-5',
-              labelStyle: const TextStyle(fontSize: 14, color: Colors.black),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(20),
-                borderSide: const BorderSide(
-                  width: 0,
-                  style: BorderStyle.none,
-                ),
-              ),
-              //disabledBorder: InputBorder.none,
-              //fillColor: Colors.black12,
-              contentPadding: const EdgeInsets.all(16),
-              filled: true,
-
-              prefixIcon: const Icon(
-                Icons.score,
-                color: Colors.grey,
-              ),
-            ),
-            onChanged: (value) => {
-              commentBloc.changeScore(value),
-            },
-            obscureText: false,
-            //maxLength: 20,
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
-          child: TextField(
-            decoration: InputDecoration(
-              //hintText: "Your Name",""
-              labelText: "Comment of your rate",
-              labelStyle: const TextStyle(fontSize: 14, color: Colors.black),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(20),
-                borderSide: const BorderSide(
-                  width: 0,
-                  style: BorderStyle.none,
-                ),
-              ),
-              //disabledBorder: InputBorder.none,
-              //fillColor: Colors.black12,
-              contentPadding: const EdgeInsets.all(16),
-              filled: true,
-
-              prefixIcon: const Icon(
-                Icons.person,
-                color: Colors.grey,
-              ),
-            ),
-            onChanged: (value) => {
-              commentBloc.changeDescription(value),
-            },
-            obscureText: false,
-            //maxLength: 20,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _comment(String text) {
+  Widget _comment(Score score) {
     return Padding(
-        padding: EdgeInsets.only(top: 10, right: 10, left: 10),
-        child: Text(text, style: TextStyle(fontSize: 20)));
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        children: [
+          Text('Score ' + score.score.toString()),
+          Text('Username ' + score.username),
+          Text('description ' + score.description),
+        ],
+      ),
+    );
   }
 
-  a() async {
-    GraphQLClient client = graphqlClass.clientToQuery();
-    String document = """
-query {
-  getUsers{
-      id
-  }
-}
-""";
-    QueryResult result =
-        await client.query(QueryOptions(document: gql(document)));
-    String responseDetails = getPrettyJSONString(result.data);
-    var response = jsonDecode(responseDetails);
-    setState(() {});
-    var b = result.data!.values.iterator;
-
-    while (b.moveNext()) {
-      print(b.current.toString());
+  List<Widget> _crearItems(List<Score> scores, commentsBloc) {
+    List<Widget> lista = [];
+    lista.add(
+      Text(
+        "Rate of ${commentsBloc.movieSerieSelected}",
+        style: const TextStyle(
+          fontSize: 30,
+          fontFamily: 'OpenSans',
+          color: Color.fromRGBO(9, 5, 28, 1),
+          fontWeight: FontWeight.w400,
+        ),
+      ),
+    );
+    lista.add(
+      const Padding(
+        padding: EdgeInsets.only(top: 10, right: 20, left: 10),
+        child: Text(
+          'Comments: ',
+          style: TextStyle(fontSize: 20),
+        ),
+      ),
+    );
+    for (var element in scores) {
+      final tempWidget = _comment(element);
+      lista.add(tempWidget);
     }
-    var c = result.data!.values.elementAt(1);
-    print(c[1]);
-    //print(response);
-  }
-
-  String getPrettyJSONString(jsonObject) {
-    var encoder = const JsonEncoder.withIndent("     ");
-    return encoder.convert(jsonObject);
+    return lista;
   }
 }
