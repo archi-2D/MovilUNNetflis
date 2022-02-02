@@ -14,7 +14,7 @@ class RegisterBloc with RegisterValidator {
   Stream<String> get userNameStream =>
       _userNameControler.stream.transform(validateEmpty);
   Stream<String> get emailStream =>
-      _emailControler.stream.transform(validateEmail);
+      _emailControler.stream.transform(validateEmpty);
   Stream<String> get phoneNumberStream =>
       _phoneNumberControler.stream.transform(validateEmpty);
   Stream<String> get passwordStream =>

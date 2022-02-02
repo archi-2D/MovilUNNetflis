@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mobile_component/generated/l10n.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:mobile_component/src/logic/bloc/app_bloc.dart';
 import 'package:mobile_component/src/logic/provider/graphql_provider.dart';
 import 'package:mobile_component/src/logic/bloc/comments_bloc.dart';
 import 'package:mobile_component/src/logic/provider/provider_blocs.dart';
@@ -30,6 +31,7 @@ class _CommentsRatePageState extends State<CommentsRatePage> {
   @override
   Widget build(BuildContext context) {
     CommentsBloc commentsBloc = context.read<ProviderBlocs>().comments;
+    AppBloc appBloc = context.read<ProviderBlocs>().appBloc;
     commentsBloc.changeUserName('32');
     commentsBloc.changeName('33');
 
@@ -51,66 +53,100 @@ class _CommentsRatePageState extends State<CommentsRatePage> {
           backgroundColor: Colors.red,
           elevation: 2,
         ),
-        body: body(context, commentsBloc),
-        bottomNavigationBar: bottonRate(commentsBloc),
+        body: body(context, commentsBloc, appBloc),
+        //bottomNavigationBar: bottonRate(commentsBloc),
       ),
     );
   }
 
-  Padding bottonRate(CommentsBloc commentsBloc) {
-    return Padding(
-      padding: const EdgeInsets.all(10.0),
-      child: ButtomWidget(
-        heroTag: 'btn1',
-        stream: commentsBloc.validateBasicForm,
-        //stream: null,
-        function: () => {
-          showDialog(
-              barrierDismissible: false,
-              context: context,
-              builder: (context) {
-                return CupertinoAlertDialog(
-                  title: const Text('Your rate was created'),
-                  actions: <Widget>[
-                    TextButton(
-                        onPressed: () {
-                          Navigator.pop(context);
+  bottonRate(CommentsBloc commentsBloc, AppBloc appBloc) {
+    String moive = """
+    mutation createMovieScore (\$movieScore:MovieScore!){
+  createMovieScore(movieScore:\$movieScore){
+    msj
+  }
+}
+""";
+    String serie = """
+   mutation createSerieScore (\$serieScore:SerieScore!){
+  createSerieScore(serieScore:\$serieScore){
+    msj
+  }
+}
+""";
+    return Mutation(
+        options: MutationOptions(
+          document: commentsBloc.isMovie! ? gql(moive) : gql(serie),
+          onCompleted: (data) => {
+            showDialog(
+                barrierDismissible: false,
+                context: context,
+                builder: (context) {
+                  return CupertinoAlertDialog(
+                    title: const Text('Your rate was created'),
+                    actions: <Widget>[
+                      TextButton(
+                        onPressed: () => {
+                          commentsBloc.changeScore(''),
+                          commentsBloc.changeDescription(''),
+                          Navigator.pushReplacementNamed(context, 'comments'),
                         },
-                        child: TextButton(
-                          onPressed: () {
-                            Navigator.pushReplacementNamed(context, 'comments');
-                          },
-                          child: const Text('Aceptar'),
-                        )),
-                  ],
-                );
-              }),
-        },
-        text: "Rate",
-        enebleColor: const Color.fromRGBO(83, 232, 139, 1),
-        disableColor: Colors.grey[400]!,
-      ),
-    );
+                        child: const Text('Aceptar'),
+                      ),
+                    ],
+                  );
+                }),
+          },
+        ),
+        builder: (RunMutation runMutation, QueryResult? result) {
+          return Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: ButtomWidget(
+                  heroTag: 'btn1',
+                  stream: commentsBloc.validateBasicForm,
+                  //stream: null,
+                  function: () => {
+                    if (commentsBloc.isMovie!)
+                      {
+                        runMutation({
+                          "movieScore": {
+                            "user_name": appBloc.username,
+                            "moive_name": commentsBloc.movieSerieSelected,
+                            "score": double.parse(commentsBloc.score!),
+                            "description": commentsBloc.description
+                          }
+                        }),
+                      }
+                    else
+                      {
+                        runMutation({
+                          "serieScore": {
+                            "user_name": appBloc.username,
+                            "serie_name": commentsBloc.movieSerieSelected,
+                            "score": double.parse(commentsBloc.score!),
+                            "description": commentsBloc.description
+                          }
+                        }),
+                      }
+                  },
+                  text: "Rate",
+                  enebleColor: const Color.fromRGBO(83, 232, 139, 1),
+                  disableColor: Colors.grey[400]!,
+                ),
+              ),
+            ],
+          );
+        });
   }
 
-  Stack body(BuildContext context, CommentsBloc commentsBloc) {
+  Stack body(BuildContext context, CommentsBloc commentsBloc, AppBloc appBloc) {
     return Stack(
       children: [
         SingleChildScrollView(
           child: Column(
             children: [
-              /*Text(
-                dotenv.env['GRAPHLURL'].toString(),
-              ),
-              ButtomWidget(
-                disableColor: Colors.grey,
-                enebleColor: Colors.blue,
-                function: () {
-                  a();
-                },
-                text: 'asd',
-              ),*/
-              // ignore: prefer_const_constructors
               Text(
                 "Your rate of ${commentsBloc.movieSerieSelected}",
                 style: const TextStyle(
@@ -129,7 +165,8 @@ class _CommentsRatePageState extends State<CommentsRatePage> {
                   stream: null,
                   builder: (context, snapshot) {
                     return form(commentsBloc);
-                  })
+                  }),
+              bottonRate(commentsBloc, appBloc),
             ],
           ),
         )
@@ -205,34 +242,5 @@ class _CommentsRatePageState extends State<CommentsRatePage> {
         ),
       ],
     );
-  }
-
-  a() async {
-    GraphQLClient client = graphqlClass.clientToQuery();
-    String document = """
-query {
-  getUsers{
-      id
-  }
-}
-""";
-    QueryResult result =
-        await client.query(QueryOptions(document: gql(document)));
-    String responseDetails = getPrettyJSONString(result.data);
-    var response = jsonDecode(responseDetails);
-    setState(() {});
-    var b = result.data!.values.iterator;
-
-    while (b.moveNext()) {
-      print(b.current.toString());
-    }
-    var c = result.data!.values.elementAt(1);
-    print(c[1]);
-    //print(response);
-  }
-
-  String getPrettyJSONString(jsonObject) {
-    var encoder = const JsonEncoder.withIndent("     ");
-    return encoder.convert(jsonObject);
   }
 }

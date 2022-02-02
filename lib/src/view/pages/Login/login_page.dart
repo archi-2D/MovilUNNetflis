@@ -3,9 +3,12 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
 
 import 'package:mobile_component/generated/l10n.dart';
+import 'package:mobile_component/src/logic/bloc/app_bloc.dart';
 import 'package:mobile_component/src/logic/bloc/login_bloc.dart';
+import 'package:mobile_component/src/logic/models/auth_user_model.dart';
 import 'package:mobile_component/src/logic/provider/provider_blocs.dart';
 import 'package:mobile_component/src/view/pages/Login/lower_buttons.dart';
 
@@ -21,20 +24,30 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  late AuthUser authUser;
   @override
   Widget build(BuildContext context) {
     LoginBloc loginBloc = context.read<ProviderBlocs>().login;
+    AppBloc appBloc = context.read<ProviderBlocs>().appBloc;
     return WillPopScope(
       onWillPop: () {
         return Navigator.maybePop(context);
       },
       child: Scaffold(
-        body: body(context, loginBloc),
+        body: body(context, loginBloc, appBloc),
       ),
     );
   }
 
-  Stack body(BuildContext context, LoginBloc loginBloc) {
+  Stack body(BuildContext context, LoginBloc loginBloc, AppBloc appBloc) {
+    String document = """
+    mutation verifyUser (\$authUser:AuthUser!){
+  verifyUser(authUser:\$authUser){
+    msj
+    error
+  }
+}
+""";
     return Stack(
       children: [
         SingleChildScrollView(
@@ -51,19 +64,61 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
               const SizedBox(height: 20),
-              StreamBuilder<Object>(
-                  stream: null,
-                  builder: (context, snapshot) {
-                    return form(loginBloc);
+              Mutation(
+                  options: MutationOptions(
+                    document: gql(document),
+                    onCompleted: (data) => {
+                      authUser = AuthUser.fromJson(data.values.elementAt(1)),
+                      if (authUser.error == 'No Error')
+                        {
+                          appBloc.changePage(0),
+                          appBloc.changeToken(authUser.token),
+                          appBloc.changeUsername(loginBloc.userName!),
+                          loginBloc.changePassword(''),
+                          Navigator.pushReplacementNamed(context, 'home'),
+                        }
+                      else
+                        {_showMaterialDialog()}
+                    },
+                  ),
+                  builder: (RunMutation runMutation, QueryResult? result) {
+                    return Column(
+                      children: [
+                        form(loginBloc),
+                        _forgotPassword(),
+                        _paddingField(ButtonsWidget(
+                          bloc: loginBloc,
+                          function: () => runMutation({
+                            "authUser": {
+                              "username": loginBloc.userName,
+                              "password": loginBloc.password
+                            }
+                          }),
+                        ))
+                      ],
+                    );
                   }),
-              _forgotPassword(),
-              _paddingField(ButtonsWidget(bloc: loginBloc)),
               _createAccount(),
             ],
           ),
         )
       ],
     );
+  }
+
+  void _showMaterialDialog() {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text('Invaid username or password'),
+            actions: [
+              TextButton(
+                  onPressed: () => {Navigator.pop(context)},
+                  child: const Text('Acept'))
+            ],
+          );
+        });
   }
 
   Container _forgotPassword() {

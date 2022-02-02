@@ -1,11 +1,13 @@
 import 'dart:async';
 
 class RegisterValidator {
-  final validateEmail = StreamTransformer<String, String>.fromHandlers(handleData: (email, sink) {
+  final validateEmail =
+      StreamTransformer<String, String>.fromHandlers(handleData: (email, sink) {
     if (email == '') {
       sink.addError('Empty');
     } else {
-      RegExp regExp = new RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+$");
+      RegExp regExp = new RegExp(
+          r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+$");
       if (regExp.hasMatch(email)) {
         sink.add(email);
       } else {
@@ -13,14 +15,16 @@ class RegisterValidator {
       }
     }
   });
-  final validateEmpty = StreamTransformer<String, String>.fromHandlers(handleData: (string, sink) {
+  final validateEmpty = StreamTransformer<String, String>.fromHandlers(
+      handleData: (string, sink) {
     if (string == '') {
       sink.addError('Empty');
     } else {
       sink.add(string);
     }
   });
-  final validatePassword = StreamTransformer<String, String>.fromHandlers(handleData: (password, sink) {
+  final validatePassword = StreamTransformer<String, String>.fromHandlers(
+      handleData: (password, sink) {
     if (password == '') {
       sink.addError('Empty');
     } else {

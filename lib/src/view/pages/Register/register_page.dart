@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
 
 import 'package:mobile_component/generated/l10n.dart';
 import 'package:mobile_component/src/logic/bloc/register_bloc.dart';
@@ -18,6 +19,8 @@ class RegisterPage extends StatefulWidget {
 
 class _RegisterPageState extends State<RegisterPage> {
   RegisterLogic registerLogic = RegisterLogic();
+  final mutationKey1 = GlobalKey<MutationState>();
+  final mutationKey2 = GlobalKey<MutationState>();
   @override
   Widget build(BuildContext context) {
     RegisterBloc registerBloc = context.read<ProviderBlocs>().register;
@@ -46,67 +49,71 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  Padding bottonRegister(RegisterBloc registerBloc) {
-    return Padding(
-      padding: const EdgeInsets.all(10.0),
-      child: ButtomWidget(
-        heroTag: 'btn1',
-        stream: registerBloc.validateBasicForm,
-        //stream: null,
-        function: () => {
-          if (registerBloc.password == registerBloc.confirmPassword)
-            {
-              showDialog(
-                  barrierDismissible: false,
-                  context: context,
-                  builder: (context) {
-                    return CupertinoAlertDialog(
-                      title: const Text('Usuario Creado'),
-                      actions: <Widget>[
-                        TextButton(
+  createAuth(RegisterBloc registerBloc) {
+    String document = """
+mutation createAuthUser (\$authCreateUser:AuthCreateUser!){
+  createAuthUser(authCreateUser:\$authCreateUser){
+    message
+  }
+}
+""";
+    return Mutation(
+        key: mutationKey1,
+        options: MutationOptions(
+          document: gql(document),
+          onCompleted: (data) => {
+            showDialog(
+                barrierDismissible: false,
+                context: context,
+                builder: (context) {
+                  return CupertinoAlertDialog(
+                    title: const Text('Usuario Creado'),
+                    actions: <Widget>[
+                      TextButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: TextButton(
                             onPressed: () {
-                              Navigator.pop(context);
+                              Navigator.pushReplacementNamed(context, '/');
+                              registerLogic.cleanRegisterBolc(registerBloc);
                             },
-                            child: TextButton(
-                              onPressed: () {
-                                Navigator.pushReplacementNamed(context, '/');
-                                registerLogic.cleanRegisterBolc(registerBloc);
-                              },
-                              child: const Text('Aceptar'),
-                            )),
-                      ],
-                    );
-                  }),
-            }
-          else
-            {
-              showDialog(
-                  barrierDismissible: false,
-                  context: context,
-                  builder: (context) {
-                    return CupertinoAlertDialog(
-                      title: const Text('Las Contraseñas no coinciden '),
-                      actions: <Widget>[
-                        TextButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                            child: const Text('Aceptar')),
-                      ],
-                    );
-                  })
-            }
-        },
-        text: S.of(context).continue_label,
-        enebleColor: const Color.fromRGBO(83, 232, 139, 1),
-        disableColor: Colors.grey[400]!,
-      ),
-    );
+                            child: const Text('Aceptar'),
+                          )),
+                    ],
+                  );
+                }),
+          },
+        ),
+        builder: (RunMutation runMutation, QueryResult? result) {
+          return Container();
+        });
+  }
+
+  createcommet(RegisterBloc registerBloc) {
+    String document = """
+mutation createUser (\$user:UserInput!){
+  createUser(user:\$user){
+    msj
+  }
+}
+""";
+    return Mutation(
+        key: mutationKey2,
+        options: MutationOptions(
+          document: gql(document),
+          onCompleted: (data) => {},
+        ),
+        builder: (RunMutation runMutation, QueryResult? result) {
+          return Container();
+        });
   }
 
   Stack body(BuildContext context, RegisterBloc registerBloc) {
     return Stack(
       children: [
+        createAuth(registerBloc),
+        createcommet(registerBloc),
         SingleChildScrollView(
           child: Column(
             children: [
@@ -132,7 +139,8 @@ class _RegisterPageState extends State<RegisterPage> {
                   stream: null,
                   builder: (context, snapshot) {
                     return form(registerBloc);
-                  })
+                  }),
+              //bottonRegister(registerBloc),
             ],
           ),
         )
@@ -148,7 +156,7 @@ class _RegisterPageState extends State<RegisterPage> {
           child: TextField(
             decoration: InputDecoration(
               //hintText: "Your Name",
-              labelText: 'nombre de usuario',
+              labelText: 'Username',
               labelStyle: const TextStyle(fontSize: 14, color: Colors.black),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(20),
@@ -215,7 +223,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     //hintText: "Your Name",
                     labelText: snapshot.hasError && snapshot.error != 'Empty'
                         ? snapshot.error.toString()
-                        : "Correo",
+                        : "Last Name",
                     labelStyle: snapshot.hasError && snapshot.error != 'Empty'
                         ? const TextStyle(fontSize: 18, color: Colors.red)
                         : const TextStyle(fontSize: 14, color: Colors.black),
@@ -258,7 +266,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     //hintText: "Your Name",
                     labelText: snapshot.hasError && snapshot.error != 'Empty'
                         ? S.of(context).invalid_password
-                        : "Contraseña",
+                        : "Password",
                     labelStyle: snapshot.hasError && snapshot.error != 'Empty'
                         ? const TextStyle(fontSize: 18, color: Colors.red)
                         : const TextStyle(fontSize: 14, color: Colors.black),
@@ -299,7 +307,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     //hintText: "Your Name",
                     labelText: snapshot.hasError && snapshot.error != 'Empty'
                         ? S.of(context).invalid_password
-                        : "Confirmar Contraseña",
+                        : "Comfirm Pasword",
                     labelStyle: snapshot.hasError && snapshot.error != 'Empty'
                         ? const TextStyle(fontSize: 18, color: Colors.red)
                         : const TextStyle(fontSize: 14, color: Colors.black),
@@ -331,6 +339,59 @@ class _RegisterPageState extends State<RegisterPage> {
               }),
         ),
       ],
+    );
+  }
+
+  bottonRegister(RegisterBloc registerBloc) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: ButtomWidget(
+        heroTag: 'btn1',
+        stream: registerBloc.validateBasicForm,
+        //stream: null,
+        function: () => {
+          if (registerBloc.password == registerBloc.confirmPassword)
+            {
+              mutationKey1.currentState!.runMutation({
+                "authCreateUser": {
+                  "username": registerBloc.userName,
+                  "firstName": registerBloc.name,
+                  "lastName": registerBloc.email,
+                  "password": registerBloc.password
+                }
+              }),
+              mutationKey2.currentState!.runMutation({
+                "user": {
+                  "user_name": registerBloc.userName,
+                  "firstName": registerBloc.name,
+                  "lastName": registerBloc.email,
+                  "password": registerBloc.password
+                }
+              })
+            }
+          else
+            {
+              showDialog(
+                  barrierDismissible: false,
+                  context: context,
+                  builder: (context) {
+                    return CupertinoAlertDialog(
+                      title: const Text('Las Contraseñas no coinciden '),
+                      actions: <Widget>[
+                        TextButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            child: const Text('Aceptar')),
+                      ],
+                    );
+                  })
+            }
+        },
+        text: S.of(context).continue_label,
+        enebleColor: const Color.fromRGBO(83, 232, 139, 1),
+        disableColor: Colors.grey[400]!,
+      ),
     );
   }
 }

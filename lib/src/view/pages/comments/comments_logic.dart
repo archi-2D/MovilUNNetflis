@@ -73,7 +73,9 @@ query {
     List<Score> scoreList = [];
     QueryResult result =
         await client.query(QueryOptions(document: gql(document)));
-
+    while (result.data == null) {
+      result = await client.query(QueryOptions(document: gql(document)));
+    }
     var scores = result.data!.values.elementAt(1);
     for (var scroeApi in scores) {
       scoreList.add(Score.fromJson(scroeApi));

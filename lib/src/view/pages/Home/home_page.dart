@@ -24,6 +24,13 @@ class _HomePageState extends State<HomePage> {
               onPressed: _pushSaved,
               tooltip: 'Saved Suggestions',
             ),
+            IconButton(
+              icon: const Icon(Icons.arrow_back),
+              onPressed: () => {
+                Navigator.pushReplacementNamed(context, '/'),
+              },
+              tooltip: 'return',
+            ),
           ],
           centerTitle: true,
           backgroundColor: Colors.red,
